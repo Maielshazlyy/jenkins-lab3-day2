@@ -1,0 +1,16 @@
+---
+- name: Install and run Nginx on the Windows Docker host
+  hosts: windows
+  gather_facts: false
+
+  tasks:
+    - name: Install Nginx and its Windows service using Chocolatey
+      chocolatey.chocolatey.win_chocolatey:
+        name: nginx
+        state: present
+
+    - name: Ensure the Nginx service is running and starts automatically
+      ansible.windows.win_service:
+        name: nginx
+        state: started
+        start_mode: auto
