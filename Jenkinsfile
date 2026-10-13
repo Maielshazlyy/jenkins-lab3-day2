@@ -12,7 +12,6 @@ pipeline {
 
         stage('Validate Windows host connection') {
             steps {
-                // Jenkins credential: SSH Username with private key, ID windows-host-ssh-key.
                 sshagent(credentials: ['windows-host-ssh-key']) {
                     sh 'ansible windows_host -i inventory.ini -m ansible.windows.win_ping'
                 }
@@ -31,19 +30,6 @@ pipeline {
     post {
         success {
             echo 'Ansible validation and Nginx setup completed successfully.'
-        }
-        failure {
-            echo 'Ansible validation or Nginx setup failed.'
-            mail(
-                to: "${env.JENKINS_ADMIN_EMAIL}",
-                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                    Ansible pipeline failed.
-                    Job: ${env.JOB_NAME}
-                    Build: ${env.BUILD_NUMBER}
-                    URL: ${env.BUILD_URL}
-                """
-            )
         }
         always {
             echo 'Pipeline finished.'
